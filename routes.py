@@ -273,8 +273,9 @@ def complete_appointment(appointment_id):
 @app.context_processor
 def inject_data():
     """Inject common data into all templates"""
+    from datetime import date
     current_user = get_current_user()
-    data = {'current_user': current_user}
+    data = {'current_user': current_user, 'today': date.today}
     
     if current_user:
         if current_user.role == 'patient':
