@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediCare Appointment System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="antialiased">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-blue-600 text-white shadow-lg">
+            <div class="container mx-auto px-4 py-6 flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-heartbeat text-3xl"></i>
+                    <h1 class="text-2xl font-bold glow">MediCare</h1>
+                </div>
+                <div class="hidden md:flex space-x-4 items-center">
+                    <a href="#" class="hover:text-blue-200 transition">Home</a>
+                    <a href="#" class="hover:text-blue-200 transition">Services</a>
+                    <a href="#" class="hover:text-blue-200 transition">About</a>
+                    <a href="#" class="hover:text-blue-200 transition">Contact</a>
+                    {% if current_user %}
+                        <span class="text-blue-200">Welcome, {{ current_user.name }}!</span>
+                        <a href="{{ url_for('logout') }}" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded-full text-sm">Logout</a>
+                    {% endif %}
+                </div>
+                <button class="md:hidden text-xl">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="container mx-auto px-4 py-4">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} mb-4 p-4 rounded-lg {% if category == 'error' %}bg-red-100 border-red-400 text-red-700{% elif category == 'success' %}bg-green-100 border-green-400 text-green-700{% elif category == 'info' %}bg-blue-100 border-blue-400 text-blue-700{% else %}bg-yellow-100 border-yellow-400 text-yellow-700{% endif %} border">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Main Content -->
+        <main class="flex-grow container mx-auto px-4 py-8">
+            {% if not current_user %}
+                <!-- Authentication Section -->
+                <section id="authSection" class="max-w-md mx-auto my-12 fade-in">
+                    <div class="text-center mb-8">
+                        <h1 class="text-3xl font-bold text-gray-800">Welcome to <span class="text-blue-600">MediCare</span></h1>
+                        <p class="text-gray-600 mt-2">Please sign in or create an account to continue</p>
+                    </div>
+                    
+                    <!-- Auth Tabs -->
+                    <div class="flex border-b border-gray-200 mb-6">
+                        <button id="loginTab" class="flex-1 py-2 font-medium text-blue-600 border-b-2 border-blue-600">Login</button>
+                        <button id="signupTab" class="flex-1 py-2 font-medium text-gray-500">Sign Up</button>
+                    </div>
+                    
+                    <!-- Login Form -->
+                    <div id="loginForm" class="auth-form p-6">
+                        <form action="{{ url_for('login') }}" method="POST">
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">I am a:</label>
+                                <div class="flex space-x-4">
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" class="form-radio text-blue-600" name="userType" value="patient" checked>
+                                        <span class="ml-2">Patient</span>
+                                    </label>
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" class="form-radio text-blue-600" name="userType" value="doctor">
+                                        <span class="ml-2">Doctor</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="loginEmail" class="block text-gray-700 mb-2">Email</label>
+                                <input type="email" id="loginEmail" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="your@email.com" required>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <label for="loginPassword" class="block text-gray-700 mb-2">Password</label>
+                                <input type="password" id="loginPassword" name="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="••••••••" required>
+                            </div>
+                            
+                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition">
+                                Login
+                            </button>
+                        </form>
+                        
+                        <div class="text-center mt-4 text-sm text-gray-600">
+                            Don't have an account? <span id="showSignup" class="toggle-auth">Sign up</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Signup Form -->
+                    <div id="signupForm" class="auth-form p-6 hidden">
+                        <form action="{{ url_for('signup') }}" method="POST">
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">I am a:</label>
+                                <div class="flex space-x-4">
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" class="form-radio text-blue-600" name="signupUserType" value="patient" checked onchange="toggleDoctorFields()">
+                                        <span class="ml-2">Patient</span>
+                                    </label>
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" class="form-radio text-blue-600" name="signupUserType" value="doctor" onchange="toggleDoctorFields()">
+                                        <span class="ml-2">Doctor</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="signupName" class="block text-gray-700 mb-2">Full Name</label>
+                                <input type="text" id="signupName" name="name" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="John Doe" required>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="signupEmail" class="block text-gray-700 mb-2">Email</label>
+                                <input type="email" id="signupEmail" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="your@email.com" required>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="signupPassword" class="block text-gray-700 mb-2">Password</label>
+                                <input type="password" id="signupPassword" name="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="••••••••" required>
+                            </div>
+                            
+                            <div class="mb-4" id="doctorFields" style="display: none;">
+                                <label for="specialization" class="block text-gray-700 mb-2">Specialization</label>
+                                <input type="text" id="specialization" name="specialization" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="Cardiology, Neurology, etc.">
+                            </div>
+                            
+                            <div class="mb-4" id="doctorFields2" style="display: none;">
+                                <label for="licenseNumber" class="block text-gray-700 mb-2">License Number</label>
+                                <input type="text" id="licenseNumber" name="licenseNumber" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="MD123456">
+                            </div>
+                            
+                            <div class="mb-6">
+                                <label for="signupConfirmPassword" class="block text-gray-700 mb-2">Confirm Password</label>
+                                <input type="password" id="signupConfirmPassword" name="confirm_password" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="••••••••" required>
+                            </div>
+                            
+                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition">
+                                Create Account
+                            </button>
+                        </form>
+                        
+                        <div class="text-center mt-4 text-sm text-gray-600">
+                            Already have an account? <span id="showLogin" class="toggle-auth">Login</span>
+                        </div>
+                    </div>
+                </section>
+
+            {% else %}
+                <!-- User Dashboard -->
+                {% if current_user.role == 'patient' %}
+                    <!-- Patient Dashboard -->
+                    <section class="fade-in">
+                        <div class="text-center mb-8">
+                            <h1 class="text-4xl font-bold text-gray-800 mb-4">Welcome, {{ current_user.name }}!</h1>
+                            <p class="text-xl text-gray-600">Manage your appointments and health records</p>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-12">
+                            <div class="bg-white rounded-xl shadow-md p-8 text-center card-hover">
+                                <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <i class="fas fa-calendar-plus text-blue-600 text-3xl"></i>
+                                </div>
+                                <h3 class="text-2xl font-bold text-gray-800 mb-4">Book Appointment</h3>
+                                <p class="text-gray-600 mb-6">Schedule a new appointment with your preferred doctor</p>
+                                <button onclick="showBookingForm()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-full transition">
+                                    Book Now
+                                </button>
+                            </div>
+
+                            <div class="bg-white rounded-xl shadow-md p-8 text-center card-hover">
+                                <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <i class="fas fa-calendar-check text-green-600 text-3xl"></i>
+                                </div>
+                                <h3 class="text-2xl font-bold text-gray-800 mb-4">My Appointments</h3>
+                                <p class="text-gray-600 mb-6">View and manage your upcoming appointments</p>
+                                <button onclick="showAppointments()" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-6 rounded-full transition">
+                                    View All
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Booking Form (Hidden by default) -->
+                        <div id="bookingForm" class="max-w-md mx-auto bg-white rounded-xl shadow-md p-8 mb-8 hidden">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Book New Appointment</h3>
+                            <form action="{{ url_for('book_appointment') }}" method="POST">
+                                <div class="mb-4">
+                                    <label for="doctor_id" class="block text-gray-700 mb-2">Select Doctor</label>
+                                    <select id="doctor_id" name="doctor_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" required>
+                                        <option value="">Choose a doctor...</option>
+                                        {% for doctor in doctors %}
+                                            <option value="{{ doctor.id }}">Dr. {{ doctor.name }} - {{ doctor.specialization }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="appointment_date" class="block text-gray-700 mb-2">Date</label>
+                                    <input type="date" id="appointment_date" name="appointment_date" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" required min="{{ today() }}">
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="appointment_time" class="block text-gray-700 mb-2">Time</label>
+                                    <input type="time" id="appointment_time" name="appointment_time" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" required>
+                                </div>
+                                
+                                <div class="mb-6">
+                                    <label for="reason" class="block text-gray-700 mb-2">Reason for Visit</label>
+                                    <textarea id="reason" name="reason" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="Brief description of your symptoms or reason for visit..."></textarea>
+                                </div>
+                                
+                                <div class="flex space-x-4">
+                                    <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition">
+                                        Book Appointment
+                                    </button>
+                                    <button type="button" onclick="hideBookingForm()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-2 px-4 rounded-lg transition">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Appointments List -->
+                        <div id="appointmentsList" class="max-w-4xl mx-auto hidden">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Your Appointments</h3>
+                            {% if patient_appointments %}
+                                <div class="space-y-4">
+                                    {% for appointment in patient_appointments %}
+                                        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 {% if appointment.status == 'scheduled' %}border-blue-500{% elif appointment.status == 'completed' %}border-green-500{% else %}border-red-500{% endif %}">
+                                            <div class="flex justify-between items-start">
+                                                <div>
+                                                    <h4 class="text-lg font-semibold text-gray-800">Dr. {{ appointment.doctor.name }}</h4>
+                                                    <p class="text-gray-600">{{ appointment.doctor.specialization }}</p>
+                                                    <p class="text-sm text-gray-500 mt-2">
+                                                        <i class="fas fa-calendar mr-2"></i>{{ appointment.appointment_date.strftime('%B %d, %Y') }}
+                                                        <i class="fas fa-clock ml-4 mr-2"></i>{{ appointment.appointment_time.strftime('%I:%M %p') }}
+                                                    </p>
+                                                    {% if appointment.reason %}
+                                                        <p class="text-sm text-gray-700 mt-2"><strong>Reason:</strong> {{ appointment.reason }}</p>
+                                                    {% endif %}
+                                                    {% if appointment.notes %}
+                                                        <p class="text-sm text-gray-700 mt-2"><strong>Notes:</strong> {{ appointment.notes }}</p>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="text-right">
+                                                    <span class="inline-block px-3 py-1 rounded-full text-sm font-medium {% if appointment.status == 'scheduled' %}bg-blue-100 text-blue-800{% elif appointment.status == 'completed' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                                        {{ appointment.status.title() }}
+                                                    </span>
+                                                    {% if appointment.status == 'scheduled' %}
+                                                        <form action="{{ url_for('cancel_appointment', appointment_id=appointment.id) }}" method="POST" class="mt-2">
+                                                            <button type="submit" class="text-red-600 hover:text-red-800 text-sm" onclick="return confirm('Are you sure you want to cancel this appointment?')">
+                                                                Cancel
+                                                            </button>
+                                                        </form>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="text-center py-12">
+                                    <i class="fas fa-calendar-times text-4xl text-gray-400 mb-4"></i>
+                                    <p class="text-gray-500">You don't have any appointments yet.</p>
+                                    <button onclick="showBookingForm(); hideAppointments();" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition">
+                                        Book Your First Appointment
+                                    </button>
+                                </div>
+                            {% endif %}
+                            <div class="text-center mt-6">
+                                <button onclick="hideAppointments()" class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-2 px-4 rounded-lg transition">
+                                    Back to Dashboard
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                {% elif current_user.role == 'doctor' %}
+                    <!-- Doctor Dashboard -->
+                    <section class="fade-in">
+                        <div class="text-center mb-8">
+                            <h1 class="text-4xl font-bold text-gray-800 mb-4">Dr. {{ current_user.name }}</h1>
+                            <p class="text-xl text-gray-600">{{ current_user.specialization }}</p>
+                            <p class="text-sm text-gray-500">License: {{ current_user.license_number }}</p>
+                        </div>
+
+                        <!-- Quick Stats -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12">
+                            <div class="bg-white rounded-xl shadow-md p-6 text-center">
+                                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-calendar-day text-blue-600 text-2xl"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-gray-800">Today's Appointments</h3>
+                                <p class="text-2xl font-bold text-blue-600">
+                                    {{ doctor_appointments|selectattr('appointment_date', 'equalto', today())|selectattr('status', 'equalto', 'scheduled')|list|length }}
+                                </p>
+                            </div>
+
+                            <div class="bg-white rounded-xl shadow-md p-6 text-center">
+                                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-gray-800">Completed</h3>
+                                <p class="text-2xl font-bold text-green-600">
+                                    {{ doctor_appointments|selectattr('status', 'equalto', 'completed')|list|length }}
+                                </p>
+                            </div>
+
+                            <div class="bg-white rounded-xl shadow-md p-6 text-center">
+                                <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-clock text-yellow-600 text-2xl"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-gray-800">Pending</h3>
+                                <p class="text-2xl font-bold text-yellow-600">
+                                    {{ doctor_appointments|selectattr('status', 'equalto', 'scheduled')|list|length }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Appointments Management -->
+                        <div class="max-w-6xl mx-auto">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-6">Your Appointments</h3>
+                            {% if doctor_appointments %}
+                                <div class="space-y-4">
+                                    {% for appointment in doctor_appointments %}
+                                        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 {% if appointment.status == 'scheduled' %}border-blue-500{% elif appointment.status == 'completed' %}border-green-500{% else %}border-red-500{% endif %}">
+                                            <div class="flex justify-between items-start">
+                                                <div class="flex-1">
+                                                    <h4 class="text-lg font-semibold text-gray-800">{{ appointment.patient.name }}</h4>
+                                                    <p class="text-gray-600">{{ appointment.patient.email }}</p>
+                                                    <p class="text-sm text-gray-500 mt-2">
+                                                        <i class="fas fa-calendar mr-2"></i>{{ appointment.appointment_date.strftime('%B %d, %Y') }}
+                                                        <i class="fas fa-clock ml-4 mr-2"></i>{{ appointment.appointment_time.strftime('%I:%M %p') }}
+                                                    </p>
+                                                    {% if appointment.reason %}
+                                                        <p class="text-sm text-gray-700 mt-2"><strong>Reason:</strong> {{ appointment.reason }}</p>
+                                                    {% endif %}
+                                                    {% if appointment.notes %}
+                                                        <p class="text-sm text-gray-700 mt-2"><strong>Notes:</strong> {{ appointment.notes }}</p>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="text-right ml-6">
+                                                    <span class="inline-block px-3 py-1 rounded-full text-sm font-medium {% if appointment.status == 'scheduled' %}bg-blue-100 text-blue-800{% elif appointment.status == 'completed' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %} mb-3">
+                                                        {{ appointment.status.title() }}
+                                                    </span>
+                                                    {% if appointment.status == 'scheduled' %}
+                                                        <div class="space-y-2">
+                                                            <form action="{{ url_for('complete_appointment', appointment_id=appointment.id) }}" method="POST" class="inline">
+                                                                <input type="text" name="notes" placeholder="Add notes..." class="w-full text-sm px-2 py-1 border rounded mb-1">
+                                                                <button type="submit" class="w-full text-green-600 hover:text-green-800 text-sm bg-green-50 hover:bg-green-100 px-2 py-1 rounded">
+                                                                    Complete
+                                                                </button>
+                                                            </form>
+                                                            <form action="{{ url_for('cancel_appointment', appointment_id=appointment.id) }}" method="POST" class="inline">
+                                                                <button type="submit" class="w-full text-red-600 hover:text-red-800 text-sm bg-red-50 hover:bg-red-100 px-2 py-1 rounded" onclick="return confirm('Are you sure you want to cancel this appointment?')">
+                                                                    Cancel
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="text-center py-12">
+                                    <i class="fas fa-calendar-times text-4xl text-gray-400 mb-4"></i>
+                                    <p class="text-gray-500">No appointments scheduled yet.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </section>
+                {% endif %}
+            {% endif %}
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-gray-800 text-white py-8 mt-16">
+            <div class="container mx-auto px-4 text-center">
+                <div class="flex items-center justify-center space-x-2 mb-4">
+                    <i class="fas fa-heartbeat text-2xl text-blue-400"></i>
+                    <h3 class="text-xl font-bold">MediCare</h3>
+                </div>
+                <p class="text-gray-400 mb-4">Your health is our priority</p>
+                <div class="flex justify-center space-x-6 text-sm">
+                    <a href="#" class="hover:text-blue-400 transition">Privacy Policy</a>
+                    <a href="#" class="hover:text-blue-400 transition">Terms of Service</a>
+                    <a href="#" class="hover:text-blue-400 transition">Contact Support</a>
+                </div>
+                <p class="text-gray-500 text-xs mt-4">© 2025 MediCare. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Auth form switching
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginTab = document.getElementById('loginTab');
+            const signupTab = document.getElementById('signupTab');
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const showSignup = document.getElementById('showSignup');
+            const showLogin = document.getElementById('showLogin');
+
+            function showLoginForm() {
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+                loginTab.classList.add('text-blue-600', 'border-blue-600');
+                loginTab.classList.remove('text-gray-500');
+                signupTab.classList.remove('text-blue-600', 'border-blue-600');
+                signupTab.classList.add('text-gray-500');
+                signupTab.style.borderBottom = 'none';
+            }
+
+            function showSignupForm() {
+                signupForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+                signupTab.classList.add('text-blue-600', 'border-blue-600');
+                signupTab.classList.remove('text-gray-500');
+                loginTab.classList.remove('text-blue-600', 'border-blue-600');
+                loginTab.classList.add('text-gray-500');
+                loginTab.style.borderBottom = 'none';
+            }
+
+            if (loginTab) loginTab.addEventListener('click', showLoginForm);
+            if (signupTab) signupTab.addEventListener('click', showSignupForm);
+            if (showSignup) showSignup.addEventListener('click', showSignupForm);
+            if (showLogin) showLogin.addEventListener('click', showLoginForm);
+        });
+
+        function toggleDoctorFields() {
+            const doctorFields = document.getElementById('doctorFields');
+            const doctorFields2 = document.getElementById('doctorFields2');
+            const isDoctorSelected = document.querySelector('input[name="signupUserType"]:checked').value === 'doctor';
+            
+            if (doctorFields && doctorFields2) {
+                doctorFields.style.display = isDoctorSelected ? 'block' : 'none';
+                doctorFields2.style.display = isDoctorSelected ? 'block' : 'none';
+                
+                // Set required attribute based on selection
+                const specializationField = document.getElementById('specialization');
+                const licenseField = document.getElementById('licenseNumber');
+                
+                if (specializationField && licenseField) {
+                    specializationField.required = isDoctorSelected;
+                    licenseField.required = isDoctorSelected;
+                }
+            }
+        }
+
+        function showBookingForm() {
+            const bookingForm = document.getElementById('bookingForm');
+            const appointmentsList = document.getElementById('appointmentsList');
+            if (bookingForm) {
+                bookingForm.classList.remove('hidden');
+            }
+            if (appointmentsList) {
+                appointmentsList.classList.add('hidden');
+            }
+        }
+
+        function hideBookingForm() {
+            const bookingForm = document.getElementById('bookingForm');
+            if (bookingForm) {
+                bookingForm.classList.add('hidden');
+            }
+        }
+
+        function showAppointments() {
+            const appointmentsList = document.getElementById('appointmentsList');
+            const bookingForm = document.getElementById('bookingForm');
+            if (appointmentsList) {
+                appointmentsList.classList.remove('hidden');
+            }
+            if (bookingForm) {
+                bookingForm.classList.add('hidden');
+            }
+        }
+
+        function hideAppointments() {
+            const appointmentsList = document.getElementById('appointmentsList');
+            if (appointmentsList) {
+                appointmentsList.classList.add('hidden');
+            }
+        }
+
+        // Set minimum date to today for appointment booking
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = document.getElementById('appointment_date');
+            if (dateInput) {
+                const today = new Date().toISOString().split('T')[0];
+                dateInput.min = today;
+                dateInput.value = today;
+            }
+        });
+    </script>
+</body>
+</html>
