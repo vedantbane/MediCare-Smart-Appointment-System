@@ -11,8 +11,8 @@
 <body class="antialiased">
     <div class="min-h-screen flex flex-col">
         <!-- Header -->
-        <header class="bg-blue-600 text-white shadow-lg">
-            <div class="container mx-auto px-4 py-6 flex justify-between items-center">
+        <header class="bg-blue-600 text-white shadow-lg relative">
+            <div class="container mx-auto px-4 py-4 md:py-6 flex justify-between items-center flex-wrap">
                 <div class="flex items-center space-x-2">
                     <i class="fas fa-heartbeat text-3xl"></i>
                     <h1 class="text-2xl font-bold glow">MediCare</h1>
@@ -20,17 +20,17 @@
                 
                 {% if current_user %}
                     <!-- Logged in user navigation -->
-                    <div class="flex items-center space-x-4">
-                        <div class="hidden md:flex items-center space-x-4">
-                            <span class="text-blue-200">Welcome, {{ current_user.name }}!</span>
-                            <span class="text-blue-100 text-sm">({{ current_user.role.title() }})</span>
+                    <div class="flex items-center space-x-2 md:space-x-4 flex-wrap">
+                        <div class="hidden sm:flex items-center space-x-2 md:space-x-4">
+                            <span class="text-blue-200 text-sm md:text-base">Welcome, {{ current_user.name }}!</span>
+                            <span class="text-blue-100 text-xs md:text-sm">({{ current_user.role.title() }})</span>
                         </div>
-                        <div class="md:hidden">
-                            <span class="text-blue-200 text-sm">{{ current_user.name }}</span>
+                        <div class="sm:hidden">
+                            <span class="text-blue-200 text-xs">{{ current_user.name }}</span>
                         </div>
-                        <a href="{{ url_for('logout') }}" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 flex items-center space-x-1">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span>Logout</span>
+                        <a href="{{ url_for('logout') }}" class="bg-red-500 hover:bg-red-600 px-3 md:px-4 py-1 md:py-2 rounded-full text-xs md:text-sm font-medium transition-colors duration-200 flex items-center space-x-1">
+                            <i class="fas fa-sign-out-alt text-xs md:text-sm"></i>
+                            <span class="hidden xs:inline">Logout</span>
                         </a>
                     </div>
                 {% else %}
@@ -41,9 +41,19 @@
                         <a href="#" class="hover:text-blue-200 transition">About</a>
                         <a href="#" class="hover:text-blue-200 transition">Contact</a>
                     </div>
-                    <button class="md:hidden text-xl">
+                    <button id="mobileMenuBtn" class="md:hidden text-xl p-2 hover:bg-blue-700 rounded transition-colors">
                         <i class="fas fa-bars"></i>
                     </button>
+                    
+                    <!-- Mobile Menu -->
+                    <div id="mobileMenu" class="hidden md:hidden absolute top-full left-0 right-0 bg-blue-600 border-t border-blue-500 shadow-lg">
+                        <div class="container mx-auto px-4 py-4 space-y-2">
+                            <a href="#" class="block py-2 px-4 hover:bg-blue-700 rounded transition">Home</a>
+                            <a href="#" class="block py-2 px-4 hover:bg-blue-700 rounded transition">Services</a>
+                            <a href="#" class="block py-2 px-4 hover:bg-blue-700 rounded transition">About</a>
+                            <a href="#" class="block py-2 px-4 hover:bg-blue-700 rounded transition">Contact</a>
+                        </div>
+                    </div>
                 {% endif %}
             </div>
         </header>
@@ -65,7 +75,7 @@
         <main class="flex-grow container mx-auto px-4 py-8">
             {% if not current_user %}
                 <!-- Authentication Section -->
-                <section id="authSection" class="max-w-md mx-auto my-12 fade-in">
+                <section id="authSection" class="max-w-md lg:max-w-lg xl:max-w-xl mx-auto my-8 md:my-12 fade-in px-4">
                     <div class="text-center mb-8">
                         <h1 class="text-3xl font-bold text-gray-800">Welcome to <span class="text-blue-600">MediCare</span></h1>
                         <p class="text-gray-600 mt-2">Please sign in or create an account to continue</p>
@@ -131,35 +141,39 @@
                                 </div>
                             </div>
                             
-                            <div class="mb-4">
-                                <label for="signupName" class="block text-gray-700 mb-2">Full Name</label>
-                                <input type="text" id="signupName" name="name" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="John Doe" required>
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                <div class="lg:col-span-2">
+                                    <label for="signupName" class="block text-gray-700 mb-2">Full Name</label>
+                                    <input type="text" id="signupName" name="name" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="John Doe" required>
+                                </div>
+                                
+                                <div class="lg:col-span-2">
+                                    <label for="signupEmail" class="block text-gray-700 mb-2">Email</label>
+                                    <input type="email" id="signupEmail" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="your@email.com" required>
+                                </div>
+                                
+                                <div>
+                                    <label for="signupPassword" class="block text-gray-700 mb-2">Password</label>
+                                    <input type="password" id="signupPassword" name="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="••••••••" required>
+                                </div>
+                                
+                                <div>
+                                    <label for="signupConfirmPassword" class="block text-gray-700 mb-2">Confirm Password</label>
+                                    <input type="password" id="signupConfirmPassword" name="confirm_password" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="••••••••" required>
+                                </div>
+                                
+                                <div id="doctorFields" style="display: none;">
+                                    <label for="specialization" class="block text-gray-700 mb-2">Specialization</label>
+                                    <input type="text" id="specialization" name="specialization" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="Cardiology, Neurology, etc.">
+                                </div>
+                                
+                                <div id="doctorFields2" style="display: none;">
+                                    <label for="licenseNumber" class="block text-gray-700 mb-2">License Number</label>
+                                    <input type="text" id="licenseNumber" name="licenseNumber" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="MD123456">
+                                </div>
                             </div>
                             
-                            <div class="mb-4">
-                                <label for="signupEmail" class="block text-gray-700 mb-2">Email</label>
-                                <input type="email" id="signupEmail" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="your@email.com" required>
-                            </div>
-                            
-                            <div class="mb-4">
-                                <label for="signupPassword" class="block text-gray-700 mb-2">Password</label>
-                                <input type="password" id="signupPassword" name="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="••••••••" required>
-                            </div>
-                            
-                            <div class="mb-4" id="doctorFields" style="display: none;">
-                                <label for="specialization" class="block text-gray-700 mb-2">Specialization</label>
-                                <input type="text" id="specialization" name="specialization" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="Cardiology, Neurology, etc.">
-                            </div>
-                            
-                            <div class="mb-4" id="doctorFields2" style="display: none;">
-                                <label for="licenseNumber" class="block text-gray-700 mb-2">License Number</label>
-                                <input type="text" id="licenseNumber" name="licenseNumber" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="MD123456">
-                            </div>
-                            
-                            <div class="mb-6">
-                                <label for="signupConfirmPassword" class="block text-gray-700 mb-2">Confirm Password</label>
-                                <input type="password" id="signupConfirmPassword" name="confirm_password" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="••••••••" required>
-                            </div>
+                            <div class="mt-6"></div>
                             
                             <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition">
                                 Create Account
@@ -183,7 +197,7 @@
                         </div>
 
                         <!-- Quick Actions -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-12">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-6 md:gap-8 max-w-6xl mx-auto mb-12 dashboard-grid">
                             <div class="bg-white rounded-xl shadow-md p-8 text-center card-hover">
                                 <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
                                     <i class="fas fa-calendar-plus text-blue-600 text-3xl"></i>
@@ -208,33 +222,37 @@
                         </div>
 
                         <!-- Booking Form (Hidden by default) -->
-                        <div id="bookingForm" class="max-w-md mx-auto bg-white rounded-xl shadow-md p-8 mb-8 hidden">
+                        <div id="bookingForm" class="max-w-md lg:max-w-lg xl:max-w-2xl mx-auto bg-white rounded-xl shadow-md p-6 md:p-8 mb-8 hidden">
                             <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Book New Appointment</h3>
                             <form action="{{ url_for('book_appointment') }}" method="POST">
-                                <div class="mb-4">
-                                    <label for="doctor_id" class="block text-gray-700 mb-2">Select Doctor</label>
-                                    <select id="doctor_id" name="doctor_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" required>
-                                        <option value="">Choose a doctor...</option>
-                                        {% for doctor in doctors %}
-                                            <option value="{{ doctor.id }}">Dr. {{ doctor.name }} - {{ doctor.specialization }}</option>
-                                        {% endfor %}
-                                    </select>
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+                                    <div class="lg:col-span-2">
+                                        <label for="doctor_id" class="block text-gray-700 mb-2">Select Doctor</label>
+                                        <select id="doctor_id" name="doctor_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" required>
+                                            <option value="">Choose a doctor...</option>
+                                            {% for doctor in doctors %}
+                                                <option value="{{ doctor.id }}">Dr. {{ doctor.name }} - {{ doctor.specialization }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    
+                                    <div>
+                                        <label for="appointment_date" class="block text-gray-700 mb-2">Date</label>
+                                        <input type="date" id="appointment_date" name="appointment_date" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" required min="{{ today().strftime('%Y-%m-%d') }}">
+                                    </div>
+                                    
+                                    <div>
+                                        <label for="appointment_time" class="block text-gray-700 mb-2">Time</label>
+                                        <input type="time" id="appointment_time" name="appointment_time" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" required>
+                                    </div>
+                                    
+                                    <div class="lg:col-span-2">
+                                        <label for="reason" class="block text-gray-700 mb-2">Reason for Visit</label>
+                                        <textarea id="reason" name="reason" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="Brief description of your symptoms or reason for visit..."></textarea>
+                                    </div>
                                 </div>
                                 
-                                <div class="mb-4">
-                                    <label for="appointment_date" class="block text-gray-700 mb-2">Date</label>
-                                    <input type="date" id="appointment_date" name="appointment_date" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" required min="{{ today().strftime('%Y-%m-%d') }}">
-                                </div>
-                                
-                                <div class="mb-4">
-                                    <label for="appointment_time" class="block text-gray-700 mb-2">Time</label>
-                                    <input type="time" id="appointment_time" name="appointment_time" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" required>
-                                </div>
-                                
-                                <div class="mb-6">
-                                    <label for="reason" class="block text-gray-700 mb-2">Reason for Visit</label>
-                                    <textarea id="reason" name="reason" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="Brief description of your symptoms or reason for visit..."></textarea>
-                                </div>
+                                <div class="mt-6"></div>
                                 
                                 <div class="flex space-x-4">
                                     <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition">
@@ -248,7 +266,7 @@
                         </div>
 
                         <!-- Appointments List -->
-                        <div id="appointmentsList" class="max-w-4xl mx-auto hidden">
+                        <div id="appointmentsList" class="max-w-4xl lg:max-w-6xl mx-auto hidden px-4">
                             <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Your Appointments</h3>
                             {% if patient_appointments %}
                                 <div class="space-y-4">
@@ -312,7 +330,7 @@
                         </div>
 
                         <!-- Quick Stats -->
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 md:gap-6 max-w-6xl mx-auto mb-12 dashboard-grid-3">
                             <div class="bg-white rounded-xl shadow-md p-6 text-center">
                                 <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                     <i class="fas fa-calendar-day text-blue-600 text-2xl"></i>
@@ -345,7 +363,7 @@
                         </div>
 
                         <!-- Appointments Management -->
-                        <div class="max-w-6xl mx-auto">
+                        <div class="max-w-6xl lg:max-w-7xl mx-auto px-4">
                             <h3 class="text-2xl font-bold text-gray-800 mb-6">Your Appointments</h3>
                             {% if doctor_appointments %}
                                 <div class="space-y-4">
@@ -512,8 +530,25 @@
             }
         }
 
-        // Set minimum date to today for appointment booking
+        // Mobile menu functionality
         document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+            
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+                
+                // Close mobile menu when clicking outside
+                document.addEventListener('click', function(event) {
+                    if (!mobileMenuBtn.contains(event.target) && !mobileMenu.contains(event.target)) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            }
+            
+            // Set minimum date to today for appointment booking
             const dateInput = document.getElementById('appointment_date');
             if (dateInput) {
                 const today = new Date().toISOString().split('T')[0];

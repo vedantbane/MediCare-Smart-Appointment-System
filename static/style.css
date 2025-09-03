@@ -107,27 +107,106 @@ body {
     }
 }
 
-/* Responsive design improvements */
-@media (max-width: 768px) {
+/* Enhanced Responsive Design */
+/* Mobile First - Base styles */
+.container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+/* Tablet and up (768px+) */
+@media (min-width: 768px) {
     .container {
-        padding-left: 1rem;
-        padding-right: 1rem;
+        max-width: 768px;
+        padding-left: 2rem;
+        padding-right: 2rem;
     }
     
+    .auth-form {
+        max-width: 28rem;
+        margin: 0 auto;
+    }
+}
+
+/* Desktop and up (1024px+) */
+@media (min-width: 1024px) {
+    .container {
+        max-width: 1024px;
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+    
+    .dashboard-grid-3 {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+    }
+}
+
+/* Large Desktop (1280px+) */
+@media (min-width: 1280px) {
+    .container {
+        max-width: 1280px;
+        padding-left: 3rem;
+        padding-right: 3rem;
+    }
+}
+
+/* Extra Large Desktop (1536px+) */
+@media (min-width: 1536px) {
+    .container {
+        max-width: 1536px;
+    }
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 767px) {
     .text-4xl {
         font-size: 2rem;
+        line-height: 2.5rem;
     }
     
     .text-3xl {
         font-size: 1.5rem;
+        line-height: 2rem;
     }
     
-    .grid-cols-1.md\\:grid-cols-2 {
-        grid-template-columns: 1fr;
+    .text-2xl {
+        font-size: 1.25rem;
+        line-height: 1.75rem;
     }
     
-    .grid-cols-1.md\\:grid-cols-3 {
+    .py-8 {
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+    }
+    
+    .py-6 {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+    
+    .space-x-4 > * + * {
+        margin-left: 0.75rem;
+    }
+    
+    .grid-mobile-1 {
         grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
+/* Tablet adjustments */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .tablet-grid-2 {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
     }
 }
 
