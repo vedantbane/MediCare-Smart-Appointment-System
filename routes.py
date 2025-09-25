@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, date, time
+from datetime import datetime, date, time, timedelta
 from flask import render_template, request, redirect, url_for, flash, session
 from app import app, db
 from models import User, Appointment, DoctorSchedule, Notification
@@ -25,6 +25,51 @@ def get_current_user():
         return User.query.get(session['user_id'])
     return None
 
+def check_upcoming_appointments(user_id):
+    """Check for appointments within the next hour and create reminder notifications"""
+    try:
+        # Get current time and time one hour from now
+        now = datetime.now()
+        one_hour_later = now + timedelta(hours=1)
+        
+        # Find appointments for this patient within the next hour
+        upcoming_appointments = Appointment.query.filter(
+            Appointment.patient_id == user_id,
+            Appointment.status == 'scheduled',
+            Appointment.appointment_date == now.date(),
+            Appointment.appointment_time >= now.time(),
+            Appointment.appointment_time <= one_hour_later.time()
+        ).all()
+        
+        for appointment in upcoming_appointments:
+            # Check if reminder notification already exists for this appointment
+            existing_reminder = Notification.query.filter(
+                Notification.user_id == user_id,
+                Notification.appointment_id == appointment.id,
+                Notification.type == 'reminder'
+            ).first()
+            
+            if not existing_reminder:
+                # Get doctor info for the notification
+                doctor = User.query.get(appointment.doctor_id)
+                
+                notification_message = f'Reminder: You have an appointment with Dr. {doctor.name} in less than an hour at {appointment.appointment_time.strftime("%I:%M %p")} today.'
+                
+                # Create reminder notification
+                notification = Notification(
+                    user_id=user_id,
+                    appointment_id=appointment.id,
+                    message=notification_message,
+                    type='reminder'
+                )
+                db.session.add(notification)
+        
+        db.session.commit()
+        
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error checking upcoming appointments for user {user_id}: {e}")
+
 @app.route('/')
 def index():
     """Main landing page"""
@@ -36,6 +81,8 @@ def index():
                                  current_user=current_user,
                                  show_doctor_dashboard=True)
         else:
+            # Check for upcoming appointments and create reminders for patients
+            check_upcoming_appointments(current_user.id)
             return render_template('index.html', 
                                  current_user=current_user,
                                  show_patient_dashboard=True)
