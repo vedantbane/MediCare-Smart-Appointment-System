@@ -2,7 +2,7 @@ import logging
 from datetime import datetime, date, time
 from flask import render_template, request, redirect, url_for, flash, session
 from app import app, db
-from models import User, Appointment, DoctorSchedule
+from models import User, Appointment, DoctorSchedule, Notification
 
 @app.before_request
 def make_session_permanent():
@@ -227,6 +227,24 @@ def cancel_appointment(appointment_id):
     try:
         appointment.status = 'cancelled'
         appointment.updated_at = datetime.utcnow()
+        
+        # Create notification if doctor cancels patient appointment
+        if current_user.role == 'doctor':
+            # Get patient and doctor info for the notification message
+            patient = User.query.get(appointment.patient_id)
+            doctor = User.query.get(appointment.doctor_id)
+            
+            notification_message = f'Your appointment with Dr. {doctor.name} scheduled for {appointment.appointment_date.strftime("%B %d, %Y")} at {appointment.appointment_time.strftime("%I:%M %p")} has been cancelled by the doctor.'
+            
+            # Create notification for the patient
+            notification = Notification(
+                user_id=appointment.patient_id,
+                appointment_id=appointment.id,
+                message=notification_message,
+                type='cancellation'
+            )
+            db.session.add(notification)
+        
         db.session.commit()
         
         flash('Appointment cancelled successfully.', 'info')
