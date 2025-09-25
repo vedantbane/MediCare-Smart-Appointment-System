@@ -70,6 +70,33 @@ def check_upcoming_appointments(user_id):
         db.session.rollback()
         logging.error(f"Error checking upcoming appointments for user {user_id}: {e}")
 
+def display_unread_notifications(user_id):
+    """Get unread notifications and display them as flash messages"""
+    try:
+        # Get all unread notifications for the user
+        unread_notifications = Notification.query.filter(
+            Notification.user_id == user_id,
+            Notification.is_read == False
+        ).order_by(Notification.created_at.desc()).all()
+        
+        # Display each notification as a flash message
+        for notification in unread_notifications:
+            if notification.type == 'cancellation':
+                flash(notification.message, 'warning')
+            elif notification.type == 'reminder':
+                flash(notification.message, 'info')
+            
+            # Mark notification as read
+            notification.is_read = True
+        
+        # Commit the changes to mark notifications as read
+        if unread_notifications:
+            db.session.commit()
+            
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error displaying notifications for user {user_id}: {e}")
+
 @app.route('/')
 def index():
     """Main landing page"""
@@ -107,6 +134,11 @@ def login():
         session['user_id'] = user.id
         session['user_role'] = user.role
         flash(f'Welcome back, {user.name}!', 'success')
+        
+        # Display unread notifications for patients
+        if user.role == 'patient':
+            display_unread_notifications(user.id)
+        
         logging.info(f"User {email} logged in successfully")
         return redirect(url_for('index'))
     else:
