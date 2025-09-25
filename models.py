@@ -81,3 +81,23 @@ class Appointment(db.Model):
     
     def __repr__(self):
         return f'<Appointment {self.id} - {self.appointment_date}>'
+
+class Notification(db.Model):
+    __tablename__ = 'notifications'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    appointment_id = db.Column(db.Integer, db.ForeignKey('appointments.id'), nullable=True)
+    
+    message = db.Column(db.Text, nullable=False)
+    type = db.Column(db.String(20), nullable=False)  # 'cancellation', 'reminder'
+    is_read = db.Column(db.Boolean, default=False)
+    
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    user = db.relationship('User', backref='notifications')
+    appointment = db.relationship('Appointment', backref='notifications')
+    
+    def __repr__(self):
+        return f'<Notification {self.id} - {self.type}>'
