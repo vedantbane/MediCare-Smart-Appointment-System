@@ -19,8 +19,14 @@ app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key-change-in-prod
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 # Configure the database
-# Check for DATABASE_URL or POSTGRES_URL (Vercel default)
-database_url = os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_URL") or "sqlite:///medicare.db"
+# Check for DATABASE_URL, POSTGRES_URL (Vercel default), or other integration variants
+database_url = (
+    os.environ.get("DATABASE_URL") or 
+    os.environ.get("POSTGRES_URL") or 
+    os.environ.get("POSTGRES_PRISMA_URL") or 
+    os.environ.get("POSTGRES_URL_NON_POOLING") or 
+    "sqlite:///medicare.db"
+)
 if database_url and database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
