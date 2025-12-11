@@ -1,59 +1,32 @@
-# MediCare App Vercel Deployment Guide
+# MediCare App Deployment Guide (Supabase Edition)
 
-This guide details the steps to deploy the MediCare Flask application to Vercel using GitHub.
+## Step 1: Push Code to GitHub (Completed)
+Your code is already on GitHub.
 
-## Prerequisites
+## Step 2: Create a Supabase Database
+Since Vercel Postgres is not available, **Supabase** is the best alternative (it is also Postgres).
 
-*   A [GitHub](https://github.com/) account.
-*   A [Vercel](https://vercel.com/) account.
-*   The `requirements.txt` and `vercel.json` files (already created).
-*   Code committed to a local git repository.
+1.  Go to [Supabase](https://supabase.com/) and create a free account/project.
+2.  Once your project is created, go to **Project Settings** (cog icon) -> **Database**.
+3.  Scroll down to **Connection params** or **Connection String**.
+4.  Copy the **URI**. It will look like:
+    `postgresql://postgres.xxxx:[YOUR-PASSWORD]@aws-0-us-east-1.pooler.supabase.com:6543/postgres`
+    *(Make sure to replace `[YOUR-PASSWORD]` with the real password you set for the database).*
 
-## Step 1: Push Code to GitHub
+## Step 3: Configure Vercel
 
-Since you have already created a repository on GitHub, run the following commands in your terminal to push your local code. Replace `<YOUR_REPOSITORY_URL>` with your actual GitHub repository URL (e.g., `https://github.com/username/medicare-app.git`).
+1.  Go to your Vercel Project.
+2.  Go to **Settings** -> **Environment Variables**.
+3.  Add the following variables:
 
-```bash
-git remote add origin <YOUR_REPOSITORY_URL>
-git branch -M main
-git push -u origin main
-```
+    *   **Key**: `DATABASE_URL`
+    *   **Value**: Paste your Supabase Connection String (from Step 2).
 
-## Step 2: Deploy on Vercel
+    *   **Key**: `SESSION_SECRET`
+    *   **Value**: `any-random-secret-string-12345`
 
-1.  Log in to your **Vercel** dashboard.
-2.  Click **"Add New..."** -> **"Project"**.
-3.  Select **"Continue with GitHub"** if asked.
-4.  Find your `medicare-app` repository in the list and click **"Import"**.
-
-## Step 3: Configure Project
-
-1.  **Framework Preset**: Select **Other** (or ensure it detects Python/Flask if available, usually "Other" is fine for custom `vercel.json`).
-2.  **Root Directory**: Leave as `./`.
-3.  **Environment Variables**: You need to set the following:
-    *   `SECRET_KEY`: A long random string for session security.
-    *   `DATABASE_URL`: The connection string for your production database.
-
-    > **Important**: SQLite will NOT work permanently on Vercel because the filesystem is ephemeral (it resets). You must use a hosted PostgreSQL database.
-
-## Step 4: Set up a PostgreSQL Database (Vercel Storage)
-
-1.  In your Vercel Project dashboard, go to the **Storage** tab.
-2.  Click **"Create Database"** and select **Postgres**.
-3.  Follow the prompts to create the database (accept defaults for region etc.).
-4.  Once created, Vercel will automatically add environment variables like `POSTGRES_URL` etc. to your project.
-5.  **Update Environment Variable**:
-    *   Go to **Settings** -> **Environment Variables**.
-    *   Ensure `DATABASE_URL` is set to the value of `POSTGRES_URL` (or `POSTGRES_PRISMA_URL` etc.), or relies on the code's auto-detection if compatible.
-    *   *Note*: The app logic I added automatically converts `postgres://` to `postgresql://` so Vercel's default variables should work if mapped to `DATABASE_URL`.
-
-## Step 5: Finish Deployment
-
-1.  Click **Deploy**.
-2.  Wait for the build to finish.
-3.  Visit the provided domain/URL to see your live app!
+4.  **Redeploy**: Go to the **Deployments** tab and redeploy the latest commit (or just push a small change to trigger it) to ensure the new variables are picked up.
 
 ## Troubleshooting
-
-*   **Database Errors**: Check the Function Logs in Vercel if you see Error 500. Ensure your `DATABASE_URL` is correct.
-*   **Missing Dependencies**: Ensure all libraries are listed in `requirements.txt`.
+*   If you see "Module not found", ensure `requirements.txt` is present (it is).
+*   If you see Database errors, verify your Supabase password is correct in the connection string.
