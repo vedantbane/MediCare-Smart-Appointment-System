@@ -41,9 +41,14 @@ db.init_app(app)
 
 with app.app_context():
     # Import models to ensure tables are created
-    import models  # noqa: F401
-    db.create_all()
-    logging.info("Database tables created")
+    try:
+        import models  # noqa: F401
+        db.create_all()
+        logging.info("Database tables created")
+    except Exception as e:
+        logging.error(f"Error initializing database: {e}")
+        # We don't re-raise here to allow the app to start and show logs
+
 
 # Import routes to ensure they are registered
 import routes  # noqa: F401, E402
