@@ -50,8 +50,18 @@ with app.app_context():
         # We don't re-raise here to allow the app to start and show logs
 
 
+@app.route('/debug-db')
+def debug_db():
+    try:
+        db.create_all()
+        user_count = User.query.count()
+        return f"Database connected! Tables created. User count: {user_count}"
+    except Exception as e:
+        return f"Database error: {str(e)}"
+
 # Import routes to ensure they are registered
 import routes  # noqa: F401, E402
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
