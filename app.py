@@ -80,6 +80,7 @@ with app.app_context():
 @app.route('/debug-db')
 def debug_db():
     try:
+        from models import User
         db.create_all()
         user_count = User.query.count()
         return f"Database connected! Tables created. User count: {user_count}"
