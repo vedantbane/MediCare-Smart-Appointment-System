@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body class="antialiased">
     <div class="min-h-screen flex flex-col">
         <!-- Header -->
@@ -17,406 +19,473 @@
                     <i class="fas fa-heartbeat text-3xl"></i>
                     <h1 class="text-2xl font-bold glow">MediCare</h1>
                 </div>
-                
+
                 {% if current_user %}
-                    <!-- Logged in user navigation -->
-                    <div class="flex items-center space-x-2 md:space-x-4 flex-wrap">
-                        <div class="hidden sm:flex items-center space-x-2 md:space-x-4">
-                            <span class="text-blue-200 text-sm md:text-base">Welcome, {{ current_user.name }}!</span>
-                            <span class="text-blue-100 text-xs md:text-sm">({{ current_user.role.title() }})</span>
-                        </div>
-                        <div class="sm:hidden">
-                            <span class="text-blue-200 text-xs">{{ current_user.name }}</span>
-                        </div>
-                        <a href="{{ url_for('logout') }}" class="bg-red-500 hover:bg-red-600 px-3 md:px-4 py-1 md:py-2 rounded-full text-xs md:text-sm font-medium transition-colors duration-200 flex items-center space-x-1">
-                            <i class="fas fa-sign-out-alt text-xs md:text-sm"></i>
-                            <span class="hidden xs:inline">Logout</span>
-                        </a>
+                <!-- Logged in user navigation -->
+                <div class="flex items-center space-x-2 md:space-x-4 flex-wrap">
+                    <div class="hidden sm:flex items-center space-x-2 md:space-x-4">
+                        <span class="text-blue-200 text-sm md:text-base">Welcome, {{ current_user.name }}!</span>
+                        <span class="text-blue-100 text-xs md:text-sm">({{ current_user.role.title() }})</span>
                     </div>
+                    <div class="sm:hidden">
+                        <span class="text-blue-200 text-xs">{{ current_user.name }}</span>
+                    </div>
+                    <a href="{{ url_for('logout') }}"
+                        class="bg-red-500 hover:bg-red-600 px-3 md:px-4 py-1 md:py-2 rounded-full text-xs md:text-sm font-medium transition-colors duration-200 flex items-center space-x-1">
+                        <i class="fas fa-sign-out-alt text-xs md:text-sm"></i>
+                        <span class="hidden xs:inline">Logout</span>
+                    </a>
+                </div>
                 {% else %}
-                    <!-- Guest navigation -->
-                    <div class="hidden md:flex space-x-4 items-center">
-                        <a href="#" class="hover:text-blue-200 transition">Home</a>
-                        <a href="#" class="hover:text-blue-200 transition">Services</a>
-                        <a href="#" class="hover:text-blue-200 transition">About</a>
-                        <a href="#" class="hover:text-blue-200 transition">Contact</a>
+                <!-- Guest navigation -->
+                <div class="hidden md:flex space-x-4 items-center">
+                    <a href="#" class="hover:text-blue-200 transition">Home</a>
+                    <a href="#" class="hover:text-blue-200 transition">Services</a>
+                    <a href="#" class="hover:text-blue-200 transition">About</a>
+                    <a href="#" class="hover:text-blue-200 transition">Contact</a>
+                </div>
+                <button id="mobileMenuBtn" class="md:hidden text-xl p-2 hover:bg-blue-700 rounded transition-colors">
+                    <i class="fas fa-bars"></i>
+                </button>
+
+                <!-- Mobile Menu -->
+                <div id="mobileMenu"
+                    class="hidden md:hidden absolute top-full left-0 right-0 bg-blue-600 border-t border-blue-500 shadow-lg">
+                    <div class="container mx-auto px-4 py-4 space-y-2">
+                        <a href="#" class="block py-2 px-4 hover:bg-blue-700 rounded transition">Home</a>
+                        <a href="#" class="block py-2 px-4 hover:bg-blue-700 rounded transition">Services</a>
+                        <a href="#" class="block py-2 px-4 hover:bg-blue-700 rounded transition">About</a>
+                        <a href="#" class="block py-2 px-4 hover:bg-blue-700 rounded transition">Contact</a>
                     </div>
-                    <button id="mobileMenuBtn" class="md:hidden text-xl p-2 hover:bg-blue-700 rounded transition-colors">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    
-                    <!-- Mobile Menu -->
-                    <div id="mobileMenu" class="hidden md:hidden absolute top-full left-0 right-0 bg-blue-600 border-t border-blue-500 shadow-lg">
-                        <div class="container mx-auto px-4 py-4 space-y-2">
-                            <a href="#" class="block py-2 px-4 hover:bg-blue-700 rounded transition">Home</a>
-                            <a href="#" class="block py-2 px-4 hover:bg-blue-700 rounded transition">Services</a>
-                            <a href="#" class="block py-2 px-4 hover:bg-blue-700 rounded transition">About</a>
-                            <a href="#" class="block py-2 px-4 hover:bg-blue-700 rounded transition">Contact</a>
-                        </div>
-                    </div>
+                </div>
                 {% endif %}
             </div>
         </header>
 
         <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="container mx-auto px-4 py-4">
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }} mb-4 p-4 rounded-lg {% if category == 'error' %}bg-red-100 border-red-400 text-red-700{% elif category == 'success' %}bg-green-100 border-green-400 text-green-700{% elif category == 'info' %}bg-blue-100 border-blue-400 text-blue-700{% else %}bg-yellow-100 border-yellow-400 text-yellow-700{% endif %} border">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
+        {% if messages %}
+        <div class="container mx-auto px-4 py-4">
+            {% for category, message in messages %}
+            <div
+                class="alert alert-{{ category }} mb-4 p-4 rounded-lg {% if category == 'error' %}bg-red-100 border-red-400 text-red-700{% elif category == 'success' %}bg-green-100 border-green-400 text-green-700{% elif category == 'info' %}bg-blue-100 border-blue-400 text-blue-700{% else %}bg-yellow-100 border-yellow-400 text-yellow-700{% endif %} border">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
         {% endwith %}
 
         <!-- Main Content -->
         <main class="flex-grow container mx-auto px-4 py-8">
             {% if not current_user %}
-                <!-- Authentication Section -->
-                <section id="authSection" class="max-w-md lg:max-w-lg xl:max-w-xl mx-auto my-8 md:my-12 fade-in px-4">
-                    <div class="text-center mb-8">
-                        <h1 class="text-3xl font-bold text-gray-800">Welcome to <span class="text-blue-600">MediCare</span></h1>
-                        <p class="text-gray-600 mt-2">Please sign in or create an account to continue</p>
-                    </div>
-                    
-                    <!-- Auth Tabs -->
-                    <div class="flex border-b border-gray-200 mb-6">
-                        <button id="loginTab" class="flex-1 py-2 font-medium text-blue-600 border-b-2 border-blue-600">Login</button>
-                        <button id="signupTab" class="flex-1 py-2 font-medium text-gray-500">Sign Up</button>
-                    </div>
-                    
-                    <!-- Login Form -->
-                    <div id="loginForm" class="auth-form p-6">
-                        <form action="{{ url_for('login') }}" method="POST">
-                            <div class="mb-4">
-                                <label class="block text-gray-700 mb-2">I am a:</label>
-                                <div class="flex space-x-4">
-                                    <label class="inline-flex items-center">
-                                        <input type="radio" class="form-radio text-blue-600" name="userType" value="patient" checked>
-                                        <span class="ml-2">Patient</span>
-                                    </label>
-                                    <label class="inline-flex items-center">
-                                        <input type="radio" class="form-radio text-blue-600" name="userType" value="doctor">
-                                        <span class="ml-2">Doctor</span>
-                                    </label>
-                                </div>
+            <!-- Authentication Section -->
+            <section id="authSection" class="max-w-md lg:max-w-lg xl:max-w-xl mx-auto my-8 md:my-12 fade-in px-4">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-gray-800">Welcome to <span class="text-blue-600">MediCare</span>
+                    </h1>
+                    <p class="text-gray-600 mt-2">Please sign in or create an account to continue</p>
+                </div>
+
+                <!-- Auth Tabs -->
+                <div class="flex border-b border-gray-200 mb-6">
+                    <button id="loginTab"
+                        class="flex-1 py-2 font-medium text-blue-600 border-b-2 border-blue-600">Login</button>
+                    <button id="signupTab" class="flex-1 py-2 font-medium text-gray-500">Sign Up</button>
+                </div>
+
+                <!-- Login Form -->
+                <div id="loginForm" class="auth-form p-6">
+                    <form action="{{ url_for('login') }}" method="POST">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">I am a:</label>
+                            <div class="flex space-x-4">
+                                <label class="inline-flex items-center">
+                                    <input type="radio" class="form-radio text-blue-600" name="userType" value="patient"
+                                        checked>
+                                    <span class="ml-2">Patient</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="radio" class="form-radio text-blue-600" name="userType" value="doctor">
+                                    <span class="ml-2">Doctor</span>
+                                </label>
                             </div>
-                            
-                            <div class="mb-4">
-                                <label for="loginEmail" class="block text-gray-700 mb-2">Email</label>
-                                <input type="email" id="loginEmail" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="your@email.com" required>
-                            </div>
-                            
-                            <div class="mb-6">
-                                <label for="loginPassword" class="block text-gray-700 mb-2">Password</label>
-                                <input type="password" id="loginPassword" name="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="••••••••" required>
-                            </div>
-                            
-                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition">
-                                Login
-                            </button>
-                        </form>
-                        
-                        <div class="text-center mt-4 text-sm text-gray-600">
-                            Don't have an account? <span id="showSignup" class="toggle-auth">Sign up</span>
                         </div>
-                    </div>
-                    
-                    <!-- Signup Form -->
-                    <div id="signupForm" class="auth-form p-6 hidden">
-                        <form action="{{ url_for('signup') }}" method="POST">
-                            <div class="mb-4">
-                                <label class="block text-gray-700 mb-2">I am a:</label>
-                                <div class="flex space-x-4">
-                                    <label class="inline-flex items-center">
-                                        <input type="radio" class="form-radio text-blue-600" name="signupUserType" value="patient" checked onchange="toggleDoctorFields()">
-                                        <span class="ml-2">Patient</span>
-                                    </label>
-                                    <label class="inline-flex items-center">
-                                        <input type="radio" class="form-radio text-blue-600" name="signupUserType" value="doctor" onchange="toggleDoctorFields()">
-                                        <span class="ml-2">Doctor</span>
-                                    </label>
-                                </div>
-                            </div>
-                            
-                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                                <div class="lg:col-span-2">
-                                    <label for="signupName" class="block text-gray-700 mb-2">Full Name</label>
-                                    <input type="text" id="signupName" name="name" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="John Doe" required>
-                                </div>
-                                
-                                <div class="lg:col-span-2">
-                                    <label for="signupEmail" class="block text-gray-700 mb-2">Email</label>
-                                    <input type="email" id="signupEmail" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="your@email.com" required>
-                                </div>
-                                
-                                <div>
-                                    <label for="signupPassword" class="block text-gray-700 mb-2">Password</label>
-                                    <input type="password" id="signupPassword" name="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="••••••••" required>
-                                </div>
-                                
-                                <div>
-                                    <label for="signupConfirmPassword" class="block text-gray-700 mb-2">Confirm Password</label>
-                                    <input type="password" id="signupConfirmPassword" name="confirm_password" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="••••••••" required>
-                                </div>
-                                
-                                <div id="doctorFields" style="display: none;">
-                                    <label for="specialization" class="block text-gray-700 mb-2">Specialization</label>
-                                    <input type="text" id="specialization" name="specialization" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="Cardiology, Neurology, etc.">
-                                </div>
-                                
-                                <div id="doctorFields2" style="display: none;">
-                                    <label for="licenseNumber" class="block text-gray-700 mb-2">License Number</label>
-                                    <input type="text" id="licenseNumber" name="licenseNumber" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="MD123456">
-                                </div>
-                            </div>
-                            
-                            <div class="mt-6"></div>
-                            
-                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition">
-                                Create Account
-                            </button>
-                        </form>
-                        
-                        <div class="text-center mt-4 text-sm text-gray-600">
-                            Already have an account? <span id="showLogin" class="toggle-auth">Login</span>
+
+                        <div class="mb-4">
+                            <label for="loginEmail" class="block text-gray-700 mb-2">Email</label>
+                            <input type="email" id="loginEmail" name="email"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field"
+                                placeholder="your@email.com" required>
                         </div>
+
+                        <div class="mb-6">
+                            <label for="loginPassword" class="block text-gray-700 mb-2">Password</label>
+                            <input type="password" id="loginPassword" name="password"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field"
+                                placeholder="••••••••" required>
+                        </div>
+
+                        <button type="submit"
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition">
+                            Login
+                        </button>
+                    </form>
+
+                    <div class="text-center mt-4 text-sm text-gray-600">
+                        Don't have an account? <span id="showSignup" class="toggle-auth">Sign up</span>
                     </div>
-                </section>
+                </div>
+
+                <!-- Signup Form -->
+                <div id="signupForm" class="auth-form p-6 hidden">
+                    <form action="{{ url_for('signup') }}" method="POST">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">I am a:</label>
+                            <div class="flex space-x-4">
+                                <label class="inline-flex items-center">
+                                    <input type="radio" class="form-radio text-blue-600" name="signupUserType"
+                                        value="patient" checked onchange="toggleDoctorFields()">
+                                    <span class="ml-2">Patient</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="radio" class="form-radio text-blue-600" name="signupUserType"
+                                        value="doctor" onchange="toggleDoctorFields()">
+                                    <span class="ml-2">Doctor</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                            <div class="lg:col-span-2">
+                                <label for="signupName" class="block text-gray-700 mb-2">Full Name</label>
+                                <input type="text" id="signupName" name="name"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field"
+                                    placeholder="John Doe" required>
+                            </div>
+
+                            <div class="lg:col-span-2">
+                                <label for="signupEmail" class="block text-gray-700 mb-2">Email</label>
+                                <input type="email" id="signupEmail" name="email"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field"
+                                    placeholder="your@email.com" required>
+                            </div>
+
+                            <div>
+                                <label for="signupPassword" class="block text-gray-700 mb-2">Password</label>
+                                <input type="password" id="signupPassword" name="password"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field"
+                                    placeholder="••••••••" required>
+                            </div>
+
+                            <div>
+                                <label for="signupConfirmPassword" class="block text-gray-700 mb-2">Confirm
+                                    Password</label>
+                                <input type="password" id="signupConfirmPassword" name="confirm_password"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field"
+                                    placeholder="••••••••" required>
+                            </div>
+
+                            <div id="doctorFields" style="display: none;">
+                                <label for="specialization" class="block text-gray-700 mb-2">Specialization</label>
+                                <input type="text" id="specialization" name="specialization"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field"
+                                    placeholder="Cardiology, Neurology, etc.">
+                            </div>
+
+                            <div id="doctorFields2" style="display: none;">
+                                <label for="licenseNumber" class="block text-gray-700 mb-2">License Number</label>
+                                <input type="text" id="licenseNumber" name="licenseNumber"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field"
+                                    placeholder="MD123456">
+                            </div>
+                        </div>
+
+                        <div class="mt-6"></div>
+
+                        <button type="submit"
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition">
+                            Create Account
+                        </button>
+                    </form>
+
+                    <div class="text-center mt-4 text-sm text-gray-600">
+                        Already have an account? <span id="showLogin" class="toggle-auth">Login</span>
+                    </div>
+                </div>
+            </section>
 
             {% else %}
-                <!-- User Dashboard -->
-                {% if current_user.role == 'patient' %}
-                    <!-- Patient Dashboard -->
-                    <section class="fade-in">
-                        <div class="text-center mb-8">
-                            <h1 class="text-4xl font-bold text-gray-800 mb-4">Welcome, {{ current_user.name }}!</h1>
-                            <p class="text-xl text-gray-600">Manage your appointments and health records</p>
+            <!-- User Dashboard -->
+            {% if current_user.role == 'patient' %}
+            <!-- Patient Dashboard -->
+            <section class="fade-in">
+                <div class="text-center mb-8">
+                    <h1 class="text-4xl font-bold text-gray-800 mb-4">Welcome, {{ current_user.name }}!</h1>
+                    <p class="text-xl text-gray-600">Manage your appointments and health records</p>
+                </div>
+
+                <!-- Quick Actions -->
+                <div
+                    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-6 md:gap-8 max-w-6xl mx-auto mb-12 dashboard-grid">
+                    <div class="bg-white rounded-xl shadow-md p-8 text-center card-hover">
+                        <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-calendar-plus text-blue-600 text-3xl"></i>
                         </div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Book Appointment</h3>
+                        <p class="text-gray-600 mb-6">Schedule a new appointment with your preferred doctor</p>
+                        <button onclick="showBookingForm()"
+                            class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-full transition">
+                            Book Now
+                        </button>
+                    </div>
 
-                        <!-- Quick Actions -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-6 md:gap-8 max-w-6xl mx-auto mb-12 dashboard-grid">
-                            <div class="bg-white rounded-xl shadow-md p-8 text-center card-hover">
-                                <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                                    <i class="fas fa-calendar-plus text-blue-600 text-3xl"></i>
-                                </div>
-                                <h3 class="text-2xl font-bold text-gray-800 mb-4">Book Appointment</h3>
-                                <p class="text-gray-600 mb-6">Schedule a new appointment with your preferred doctor</p>
-                                <button onclick="showBookingForm()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-full transition">
-                                    Book Now
-                                </button>
-                            </div>
-
-                            <div class="bg-white rounded-xl shadow-md p-8 text-center card-hover">
-                                <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                                    <i class="fas fa-calendar-check text-green-600 text-3xl"></i>
-                                </div>
-                                <h3 class="text-2xl font-bold text-gray-800 mb-4">My Appointments</h3>
-                                <p class="text-gray-600 mb-6">View and manage your upcoming appointments</p>
-                                <button onclick="showAppointments()" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-6 rounded-full transition">
-                                    View All
-                                </button>
-                            </div>
+                    <div class="bg-white rounded-xl shadow-md p-8 text-center card-hover">
+                        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-calendar-check text-green-600 text-3xl"></i>
                         </div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">My Appointments</h3>
+                        <p class="text-gray-600 mb-6">View and manage your upcoming appointments</p>
+                        <button onclick="showAppointments()"
+                            class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-6 rounded-full transition">
+                            View All
+                        </button>
+                    </div>
+                </div>
 
-                        <!-- Booking Form (Hidden by default) -->
-                        <div id="bookingForm" class="max-w-md lg:max-w-lg xl:max-w-2xl mx-auto bg-white rounded-xl shadow-md p-6 md:p-8 mb-8 hidden">
-                            <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Book New Appointment</h3>
-                            <form action="{{ url_for('book_appointment') }}" method="POST">
-                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
-                                    <div class="lg:col-span-2">
-                                        <label for="doctor_id" class="block text-gray-700 mb-2">Select Doctor</label>
-                                        <select id="doctor_id" name="doctor_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" required>
-                                            <option value="">Choose a doctor...</option>
-                                            {% for doctor in doctors %}
-                                                <option value="{{ doctor.id }}">Dr. {{ doctor.name }} - {{ doctor.specialization }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                    
-                                    <div>
-                                        <label for="appointment_date" class="block text-gray-700 mb-2">Date</label>
-                                        <input type="date" id="appointment_date" name="appointment_date" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" required min="{{ today().strftime('%Y-%m-%d') }}">
-                                    </div>
-                                    
-                                    <div>
-                                        <label for="appointment_time" class="block text-gray-700 mb-2">Time</label>
-                                        <input type="time" id="appointment_time" name="appointment_time" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" required>
-                                    </div>
-                                    
-                                    <div class="lg:col-span-2">
-                                        <label for="reason" class="block text-gray-700 mb-2">Reason for Visit</label>
-                                        <textarea id="reason" name="reason" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" placeholder="Brief description of your symptoms or reason for visit..."></textarea>
-                                    </div>
-                                </div>
-                                
-                                <div class="mt-6"></div>
-                                
-                                <div class="flex space-x-4">
-                                    <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition">
-                                        Book Appointment
-                                    </button>
-                                    <button type="button" onclick="hideBookingForm()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-2 px-4 rounded-lg transition">
-                                        Cancel
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-
-                        <!-- Appointments List -->
-                        <div id="appointmentsList" class="max-w-4xl lg:max-w-6xl mx-auto hidden px-4">
-                            <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Your Appointments</h3>
-                            {% if patient_appointments %}
-                                <div class="space-y-4">
-                                    {% for appointment in patient_appointments %}
-                                        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 {% if appointment.status == 'scheduled' %}border-blue-500{% elif appointment.status == 'completed' %}border-green-500{% else %}border-red-500{% endif %}">
-                                            <div class="flex justify-between items-start">
-                                                <div>
-                                                    <h4 class="text-lg font-semibold text-gray-800">Dr. {{ appointment.doctor.name }}</h4>
-                                                    <p class="text-gray-600">{{ appointment.doctor.specialization }}</p>
-                                                    <p class="text-sm text-gray-500 mt-2">
-                                                        <i class="fas fa-calendar mr-2"></i>{{ appointment.appointment_date.strftime('%B %d, %Y') }}
-                                                        <i class="fas fa-clock ml-4 mr-2"></i>{{ appointment.appointment_time.strftime('%I:%M %p') }}
-                                                    </p>
-                                                    {% if appointment.reason %}
-                                                        <p class="text-sm text-gray-700 mt-2"><strong>Reason:</strong> {{ appointment.reason }}</p>
-                                                    {% endif %}
-                                                    {% if appointment.notes %}
-                                                        <p class="text-sm text-gray-700 mt-2"><strong>Notes:</strong> {{ appointment.notes }}</p>
-                                                    {% endif %}
-                                                </div>
-                                                <div class="text-right">
-                                                    <span class="inline-block px-3 py-1 rounded-full text-sm font-medium {% if appointment.status == 'scheduled' %}bg-blue-100 text-blue-800{% elif appointment.status == 'completed' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
-                                                        {{ appointment.status.title() }}
-                                                    </span>
-                                                    {% if appointment.status == 'scheduled' %}
-                                                        <form action="{{ url_for('cancel_appointment', appointment_id=appointment.id) }}" method="POST" class="mt-2">
-                                                            <button type="submit" class="text-red-600 hover:text-red-800 text-sm" onclick="return confirm('Are you sure you want to cancel this appointment?')">
-                                                                Cancel
-                                                            </button>
-                                                        </form>
-                                                    {% endif %}
-                                                </div>
-                                            </div>
-                                        </div>
+                <!-- Booking Form (Hidden by default) -->
+                <div id="bookingForm"
+                    class="max-w-md lg:max-w-lg xl:max-w-2xl mx-auto bg-white rounded-xl shadow-md p-6 md:p-8 mb-8 hidden">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Book New Appointment</h3>
+                    <form action="{{ url_for('book_appointment') }}" method="POST">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+                            <div class="lg:col-span-2">
+                                <label for="doctor_id" class="block text-gray-700 mb-2">Select Doctor</label>
+                                <select id="doctor_id" name="doctor_id"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" required>
+                                    <option value="">Choose a doctor...</option>
+                                    {% for doctor in doctors %}
+                                    <option value="{{ doctor.id }}">Dr. {{ doctor.name }} - {{ doctor.specialization }}
+                                    </option>
                                     {% endfor %}
-                                </div>
-                            {% else %}
-                                <div class="text-center py-12">
-                                    <i class="fas fa-calendar-times text-4xl text-gray-400 mb-4"></i>
-                                    <p class="text-gray-500">You don't have any appointments yet.</p>
-                                    <button onclick="showBookingForm(); hideAppointments();" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition">
-                                        Book Your First Appointment
-                                    </button>
-                                </div>
-                            {% endif %}
-                            <div class="text-center mt-6">
-                                <button onclick="hideAppointments()" class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-2 px-4 rounded-lg transition">
-                                    Back to Dashboard
-                                </button>
-                            </div>
-                        </div>
-                    </section>
-
-                {% elif current_user.role == 'doctor' %}
-                    <!-- Doctor Dashboard -->
-                    <section class="fade-in">
-                        <div class="text-center mb-8">
-                            <h1 class="text-4xl font-bold text-gray-800 mb-4">Dr. {{ current_user.name }}</h1>
-                            <p class="text-xl text-gray-600">{{ current_user.specialization }}</p>
-                            <p class="text-sm text-gray-500">License: {{ current_user.license_number }}</p>
-                        </div>
-
-                        <!-- Quick Stats -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 md:gap-6 max-w-6xl mx-auto mb-12 dashboard-grid-3">
-                            <div class="bg-white rounded-xl shadow-md p-6 text-center">
-                                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <i class="fas fa-calendar-day text-blue-600 text-2xl"></i>
-                                </div>
-                                <h3 class="text-lg font-semibold text-gray-800">Today's Appointments</h3>
-                                <p class="text-2xl font-bold text-blue-600">
-                                    {{ doctor_appointments|selectattr('appointment_date', 'equalto', today())|selectattr('status', 'equalto', 'scheduled')|list|length }}
-                                </p>
+                                </select>
                             </div>
 
-                            <div class="bg-white rounded-xl shadow-md p-6 text-center">
-                                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <i class="fas fa-check-circle text-green-600 text-2xl"></i>
-                                </div>
-                                <h3 class="text-lg font-semibold text-gray-800">Completed</h3>
-                                <p class="text-2xl font-bold text-green-600">
-                                    {{ doctor_appointments|selectattr('status', 'equalto', 'completed')|list|length }}
-                                </p>
+                            <div>
+                                <label for="appointment_date" class="block text-gray-700 mb-2">Date</label>
+                                <input type="date" id="appointment_date" name="appointment_date"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" required
+                                    min="{{ today().strftime('%Y-%m-%d') }}">
                             </div>
 
-                            <div class="bg-white rounded-xl shadow-md p-6 text-center">
-                                <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <i class="fas fa-clock text-yellow-600 text-2xl"></i>
-                                </div>
-                                <h3 class="text-lg font-semibold text-gray-800">Pending</h3>
-                                <p class="text-2xl font-bold text-yellow-600">
-                                    {{ doctor_appointments|selectattr('status', 'equalto', 'scheduled')|list|length }}
-                                </p>
+                            <div>
+                                <label for="appointment_time" class="block text-gray-700 mb-2">Time</label>
+                                <input type="time" id="appointment_time" name="appointment_time"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field" required>
+                            </div>
+
+                            <div class="lg:col-span-2">
+                                <label for="reason" class="block text-gray-700 mb-2">Reason for Visit</label>
+                                <textarea id="reason" name="reason" rows="3"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field"
+                                    placeholder="Brief description of your symptoms or reason for visit..."></textarea>
                             </div>
                         </div>
 
-                        <!-- Appointments Management -->
-                        <div class="max-w-6xl lg:max-w-7xl mx-auto px-4">
-                            <h3 class="text-2xl font-bold text-gray-800 mb-6">Your Appointments</h3>
-                            {% if doctor_appointments %}
-                                <div class="space-y-4">
-                                    {% for appointment in doctor_appointments %}
-                                        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 {% if appointment.status == 'scheduled' %}border-blue-500{% elif appointment.status == 'completed' %}border-green-500{% else %}border-red-500{% endif %}">
-                                            <div class="flex justify-between items-start">
-                                                <div class="flex-1">
-                                                    <h4 class="text-lg font-semibold text-gray-800">{{ appointment.patient.name }}</h4>
-                                                    <p class="text-gray-600">{{ appointment.patient.email }}</p>
-                                                    <p class="text-sm text-gray-500 mt-2">
-                                                        <i class="fas fa-calendar mr-2"></i>{{ appointment.appointment_date.strftime('%B %d, %Y') }}
-                                                        <i class="fas fa-clock ml-4 mr-2"></i>{{ appointment.appointment_time.strftime('%I:%M %p') }}
-                                                    </p>
-                                                    {% if appointment.reason %}
-                                                        <p class="text-sm text-gray-700 mt-2"><strong>Reason:</strong> {{ appointment.reason }}</p>
-                                                    {% endif %}
-                                                    {% if appointment.notes %}
-                                                        <p class="text-sm text-gray-700 mt-2"><strong>Notes:</strong> {{ appointment.notes }}</p>
-                                                    {% endif %}
-                                                </div>
-                                                <div class="text-right ml-6">
-                                                    <span class="inline-block px-3 py-1 rounded-full text-sm font-medium {% if appointment.status == 'scheduled' %}bg-blue-100 text-blue-800{% elif appointment.status == 'completed' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %} mb-3">
-                                                        {{ appointment.status.title() }}
-                                                    </span>
-                                                    {% if appointment.status == 'scheduled' %}
-                                                        <div class="space-y-2">
-                                                            <form action="{{ url_for('complete_appointment', appointment_id=appointment.id) }}" method="POST" class="inline">
-                                                                <input type="text" name="notes" placeholder="Add notes..." class="w-full text-sm px-2 py-1 border rounded mb-1">
-                                                                <button type="submit" class="w-full text-green-600 hover:text-green-800 text-sm bg-green-50 hover:bg-green-100 px-2 py-1 rounded">
-                                                                    Complete
-                                                                </button>
-                                                            </form>
-                                                            <form action="{{ url_for('cancel_appointment', appointment_id=appointment.id) }}" method="POST" class="inline">
-                                                                <button type="submit" class="w-full text-red-600 hover:text-red-800 text-sm bg-red-50 hover:bg-red-100 px-2 py-1 rounded" onclick="return confirm('Are you sure you want to cancel this appointment?')">
-                                                                    Cancel
-                                                                </button>
-                                                            </form>
-                                                        </div>
-                                                    {% endif %}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            {% else %}
-                                <div class="text-center py-12">
-                                    <i class="fas fa-calendar-times text-4xl text-gray-400 mb-4"></i>
-                                    <p class="text-gray-500">No appointments scheduled yet.</p>
-                                </div>
-                            {% endif %}
+                        <div class="mt-6"></div>
+
+                        <div class="flex space-x-4">
+                            <button type="submit"
+                                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition">
+                                Book Appointment
+                            </button>
+                            <button type="button" onclick="hideBookingForm()"
+                                class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-2 px-4 rounded-lg transition">
+                                Cancel
+                            </button>
                         </div>
-                    </section>
-                {% endif %}
+                    </form>
+                </div>
+
+                <!-- Appointments List -->
+                <div id="appointmentsList" class="max-w-4xl lg:max-w-6xl mx-auto hidden px-4">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Your Appointments</h3>
+                    {% if patient_appointments %}
+                    <div class="space-y-4">
+                        {% for appointment in patient_appointments %}
+                        <div
+                            class="bg-white rounded-lg shadow-md p-6 border-l-4 {% if appointment.status == 'scheduled' %}border-blue-500{% elif appointment.status == 'completed' %}border-green-500{% else %}border-red-500{% endif %}">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="text-lg font-semibold text-gray-800">Dr. {{ appointment.doctor.name }}
+                                    </h4>
+                                    <p class="text-gray-600">{{ appointment.doctor.specialization }}</p>
+                                    <p class="text-sm text-gray-500 mt-2">
+                                        <i class="fas fa-calendar mr-2"></i>{{ appointment.appointment_date.strftime('%B
+                                        %d, %Y') }}
+                                        <i class="fas fa-clock ml-4 mr-2"></i>{{
+                                        appointment.appointment_time.strftime('%I:%M %p') }}
+                                    </p>
+                                    {% if appointment.reason %}
+                                    <p class="text-sm text-gray-700 mt-2"><strong>Reason:</strong> {{ appointment.reason
+                                        }}</p>
+                                    {% endif %}
+                                    {% if appointment.notes %}
+                                    <p class="text-sm text-gray-700 mt-2"><strong>Notes:</strong> {{ appointment.notes
+                                        }}</p>
+                                    {% endif %}
+                                </div>
+                                <div class="text-right">
+                                    <span
+                                        class="inline-block px-3 py-1 rounded-full text-sm font-medium {% if appointment.status == 'scheduled' %}bg-blue-100 text-blue-800{% elif appointment.status == 'completed' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                        {{ appointment.status.title() }}
+                                    </span>
+                                    {% if appointment.status == 'scheduled' %}
+                                    <form action="{{ url_for('cancel_appointment', appointment_id=appointment.id) }}"
+                                        method="POST" class="mt-2">
+                                        <button type="submit" class="text-red-600 hover:text-red-800 text-sm"
+                                            onclick="return confirm('Are you sure you want to cancel this appointment?')">
+                                            Cancel
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-12">
+                        <i class="fas fa-calendar-times text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-500">You don't have any appointments yet.</p>
+                        <button onclick="showBookingForm(); hideAppointments();"
+                            class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition">
+                            Book Your First Appointment
+                        </button>
+                    </div>
+                    {% endif %}
+                    <div class="text-center mt-6">
+                        <button onclick="hideAppointments()"
+                            class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-2 px-4 rounded-lg transition">
+                            Back to Dashboard
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            {% elif current_user.role == 'doctor' %}
+            <!-- Doctor Dashboard -->
+            <section class="fade-in">
+                <div class="text-center mb-8">
+                    <h1 class="text-4xl font-bold text-gray-800 mb-4">Dr. {{ current_user.name }}</h1>
+                    <p class="text-xl text-gray-600">{{ current_user.specialization }}</p>
+                    <p class="text-sm text-gray-500">License: {{ current_user.license_number }}</p>
+                </div>
+
+                <!-- Quick Stats -->
+                <div
+                    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 md:gap-6 max-w-6xl mx-auto mb-12 dashboard-grid-3">
+                    <div class="bg-white rounded-xl shadow-md p-6 text-center">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-calendar-day text-blue-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800">Today's Appointments</h3>
+                        <p class="text-2xl font-bold text-blue-600">
+                            {{ doctor_appointments|selectattr('appointment_date', 'equalto',
+                            today())|selectattr('status', 'equalto', 'scheduled')|list|length }}
+                        </p>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-md p-6 text-center">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800">Completed</h3>
+                        <p class="text-2xl font-bold text-green-600">
+                            {{ doctor_appointments|selectattr('status', 'equalto', 'completed')|list|length }}
+                        </p>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-md p-6 text-center">
+                        <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-clock text-yellow-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800">Pending</h3>
+                        <p class="text-2xl font-bold text-yellow-600">
+                            {{ doctor_appointments|selectattr('status', 'equalto', 'scheduled')|list|length }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Appointments Management -->
+                <div class="max-w-6xl lg:max-w-7xl mx-auto px-4">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6">Your Appointments</h3>
+                    {% if doctor_appointments %}
+                    <div class="space-y-4">
+                        {% for appointment in doctor_appointments %}
+                        <div
+                            class="bg-white rounded-lg shadow-md p-6 border-l-4 {% if appointment.status == 'scheduled' %}border-blue-500{% elif appointment.status == 'completed' %}border-green-500{% else %}border-red-500{% endif %}">
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <h4 class="text-lg font-semibold text-gray-800">{{ appointment.patient.name }}</h4>
+                                    <p class="text-gray-600">{{ appointment.patient.email }}</p>
+                                    <p class="text-sm text-gray-500 mt-2">
+                                        <i class="fas fa-calendar mr-2"></i>{{ appointment.appointment_date.strftime('%B
+                                        %d, %Y') }}
+                                        <i class="fas fa-clock ml-4 mr-2"></i>{{
+                                        appointment.appointment_time.strftime('%I:%M %p') }}
+                                    </p>
+                                    {% if appointment.reason %}
+                                    <p class="text-sm text-gray-700 mt-2"><strong>Reason:</strong> {{ appointment.reason
+                                        }}</p>
+                                    {% endif %}
+                                    {% if appointment.notes %}
+                                    <p class="text-sm text-gray-700 mt-2"><strong>Notes:</strong> {{ appointment.notes
+                                        }}</p>
+                                    {% endif %}
+                                </div>
+                                <div class="text-right ml-6">
+                                    <span
+                                        class="inline-block px-3 py-1 rounded-full text-sm font-medium {% if appointment.status == 'scheduled' %}bg-blue-100 text-blue-800{% elif appointment.status == 'completed' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %} mb-3">
+                                        {{ appointment.status.title() }}
+                                    </span>
+                                    {% if appointment.status == 'scheduled' %}
+                                    <div class="space-y-2">
+                                        <form
+                                            action="{{ url_for('complete_appointment', appointment_id=appointment.id) }}"
+                                            method="POST" class="inline">
+                                            <input type="text" name="notes" placeholder="Add notes..."
+                                                class="w-full text-sm px-2 py-1 border rounded mb-1">
+                                            <button type="submit"
+                                                class="w-full text-green-600 hover:text-green-800 text-sm bg-green-50 hover:bg-green-100 px-2 py-1 rounded">
+                                                Complete
+                                            </button>
+                                        </form>
+                                        <form
+                                            action="{{ url_for('cancel_appointment', appointment_id=appointment.id) }}"
+                                            method="POST" class="inline">
+                                            <button type="submit"
+                                                class="w-full text-red-600 hover:text-red-800 text-sm bg-red-50 hover:bg-red-100 px-2 py-1 rounded"
+                                                onclick="return confirm('Are you sure you want to cancel this appointment?')">
+                                                Cancel
+                                            </button>
+                                        </form>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-12">
+                        <i class="fas fa-calendar-times text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-500">No appointments scheduled yet.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </section>
+            {% endif %}
             {% endif %}
         </main>
 
@@ -440,7 +509,7 @@
 
     <script>
         // Auth form switching
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const loginTab = document.getElementById('loginTab');
             const signupTab = document.getElementById('signupTab');
             const loginForm = document.getElementById('loginForm');
@@ -478,15 +547,15 @@
             const doctorFields = document.getElementById('doctorFields');
             const doctorFields2 = document.getElementById('doctorFields2');
             const isDoctorSelected = document.querySelector('input[name="signupUserType"]:checked').value === 'doctor';
-            
+
             if (doctorFields && doctorFields2) {
                 doctorFields.style.display = isDoctorSelected ? 'block' : 'none';
                 doctorFields2.style.display = isDoctorSelected ? 'block' : 'none';
-                
+
                 // Set required attribute based on selection
                 const specializationField = document.getElementById('specialization');
                 const licenseField = document.getElementById('licenseNumber');
-                
+
                 if (specializationField && licenseField) {
                     specializationField.required = isDoctorSelected;
                     licenseField.required = isDoctorSelected;
@@ -531,23 +600,23 @@
         }
 
         // Mobile menu functionality
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const mobileMenuBtn = document.getElementById('mobileMenuBtn');
             const mobileMenu = document.getElementById('mobileMenu');
-            
+
             if (mobileMenuBtn && mobileMenu) {
-                mobileMenuBtn.addEventListener('click', function() {
+                mobileMenuBtn.addEventListener('click', function () {
                     mobileMenu.classList.toggle('hidden');
                 });
-                
+
                 // Close mobile menu when clicking outside
-                document.addEventListener('click', function(event) {
+                document.addEventListener('click', function (event) {
                     if (!mobileMenuBtn.contains(event.target) && !mobileMenu.contains(event.target)) {
                         mobileMenu.classList.add('hidden');
                     }
                 });
             }
-            
+
             // Set minimum date to today for appointment booking
             const dateInput = document.getElementById('appointment_date');
             if (dateInput) {
@@ -556,6 +625,79 @@
                 dateInput.value = today;
             }
         });
+
+        // Ownership Modal
+        document.addEventListener('DOMContentLoaded', function () {
+            const ownershipModal = document.getElementById('ownershipModal');
+            if (ownershipModal) {
+                // Show modal on load
+                ownershipModal.classList.remove('hidden');
+
+                // Add animation class
+                const modalContent = ownershipModal.querySelector('div.bg-white');
+                if (modalContent) {
+                    modalContent.classList.add('scale-100');
+                    modalContent.classList.remove('scale-95');
+                }
+            }
+        });
+
+        function closeOwnershipModal() {
+            const ownershipModal = document.getElementById('ownershipModal');
+            if (ownershipModal) {
+                ownershipModal.classList.add('hidden');
+            }
+        }
     </script>
+
+    <!-- Ownership Modal -->
+    <div id="ownershipModal"
+        class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity duration-300">
+        <div
+            class="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-6 md:p-8 transform scale-95 transition-transform duration-300 relative border-l-4 border-yellow-500">
+            <div class="text-center mb-6">
+                <i class="fas fa-exclamation-triangle text-4xl text-yellow-500 mb-4"></i>
+                <h2 class="text-2xl font-bold text-gray-800">Ownership & Authenticity Notice</h2>
+            </div>
+
+            <div class="space-y-4 text-gray-700 leading-relaxed max-h-[60vh] overflow-y-auto pr-2">
+                <p class="font-medium">This website and its associated services are the official property of <span
+                        class="text-blue-600 font-bold">Team MediCare</span>.</p>
+
+                <p>Only the members of Team MediCare are the legitimate owners and authorized representatives of this
+                    platform. Possession of the website link, source code access, or deployment rights does not imply
+                    ownership in any form.</p>
+
+                <p>Any individual or entity claiming ownership, authority, or representation of this website without
+                    proper authorization from Team MediCare will be considered fraudulent and may be subject to action
+                    under applicable copyright and fraud laws.</p>
+
+                <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 my-4">
+                    <p class="font-medium text-blue-800 mb-2">For any verification, ownership confirmation, or official
+                        queries related to this platform, please contact us at:</p>
+                    <a href="mailto:medicare24778@gmail.com"
+                        class="flex items-center text-blue-600 font-bold hover:underline">
+                        <i class="fas fa-envelope mr-2"></i> medicare24778@gmail.com
+                    </a>
+                </div>
+
+                <p class="italic text-gray-600">We kindly request interviewers, evaluators, and reviewers to verify
+                    ownership details through the above contact channel.</p>
+
+                <div class="text-right mt-6 pt-4 border-t border-gray-100">
+                    <p class="font-bold text-gray-800">— Vedant & Yash</p>
+                    <p class="text-sm text-gray-500">Team Heads, Team MediCare</p>
+                </div>
+            </div>
+
+            <div class="mt-8 text-center">
+                <button onclick="closeOwnershipModal()"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full transition transform hover:scale-105 shadow-lg">
+                    I Acknowledge
+                </button>
+            </div>
+        </div>
+    </div>
 </body>
+
 </html>
