@@ -39,10 +39,10 @@
                 {% else %}
                 <!-- Guest navigation -->
                 <div class="hidden md:flex space-x-4 items-center">
-                    <a href="#" class="hover:text-blue-200 transition">Home</a>
-                    <a href="#" class="hover:text-blue-200 transition">Services</a>
-                    <a href="#" class="hover:text-blue-200 transition">About</a>
-                    <a href="#" class="hover:text-blue-200 transition">Contact</a>
+                    <a href="#home" class="hover:text-blue-200 transition">Home</a>
+                    <a href="#services" class="hover:text-blue-200 transition">Services</a>
+                    <a href="#about" class="hover:text-blue-200 transition">About</a>
+                    <a href="#contact" class="hover:text-blue-200 transition">Contact</a>
                 </div>
                 <button id="mobileMenuBtn" class="md:hidden text-xl p-2 hover:bg-blue-700 rounded transition-colors">
                     <i class="fas fa-bars"></i>
@@ -52,10 +52,10 @@
                 <div id="mobileMenu"
                     class="hidden md:hidden absolute top-full left-0 right-0 bg-blue-600 border-t border-blue-500 shadow-lg">
                     <div class="container mx-auto px-4 py-4 space-y-2">
-                        <a href="#" class="block py-2 px-4 hover:bg-blue-700 rounded transition">Home</a>
-                        <a href="#" class="block py-2 px-4 hover:bg-blue-700 rounded transition">Services</a>
-                        <a href="#" class="block py-2 px-4 hover:bg-blue-700 rounded transition">About</a>
-                        <a href="#" class="block py-2 px-4 hover:bg-blue-700 rounded transition">Contact</a>
+                        <a href="#home" class="block py-2 px-4 hover:bg-blue-700 rounded transition">Home</a>
+                        <a href="#services" class="block py-2 px-4 hover:bg-blue-700 rounded transition">Services</a>
+                        <a href="#about" class="block py-2 px-4 hover:bg-blue-700 rounded transition">About</a>
+                        <a href="#contact" class="block py-2 px-4 hover:bg-blue-700 rounded transition">Contact</a>
                     </div>
                 </div>
                 {% endif %}
@@ -79,8 +79,8 @@
         <!-- Main Content -->
         <main class="flex-grow container mx-auto px-4 py-8">
             {% if not current_user %}
-            <!-- Authentication Section -->
-            <section id="authSection" class="max-w-md lg:max-w-lg xl:max-w-xl mx-auto my-8 md:my-12 fade-in px-4">
+            <!-- Authentication Section (Home) -->
+            <section id="home" class="max-w-md lg:max-w-lg xl:max-w-xl mx-auto my-8 md:my-12 fade-in px-4 scroll-mt-24">
                 <div class="text-center mb-8">
                     <h1 class="text-3xl font-bold text-gray-800">Welcome to <span class="text-blue-600">MediCare</span>
                     </h1>
@@ -211,6 +211,157 @@
 
                     <div class="text-center mt-4 text-sm text-gray-600">
                         Already have an account? <span id="showLogin" class="toggle-auth">Login</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Services Section -->
+            <section id="services" class="py-16 scroll-mt-24">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-800">Our <span class="text-blue-600">Services</span></h2>
+                    <div class="w-16 h-1 bg-blue-600 mx-auto mt-4 rounded"></div>
+                    <p class="text-gray-600 mt-4 max-w-2xl mx-auto">Comprehensive healthcare solutions tailored to your
+                        needs</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                    <!-- Service 1 -->
+                    <div class="bg-white p-8 rounded-xl shadow-md card-hover text-center border border-gray-100">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-user-md text-2xl text-blue-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Expert Consultation</h3>
+                        <p class="text-gray-600">Connect with top-rated specialists across various medical fields for
+                            professional advice and treatment plans.</p>
+                    </div>
+
+                    <!-- Service 2 -->
+                    <div class="bg-white p-8 rounded-xl shadow-md card-hover text-center border border-gray-100">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-calendar-check text-2xl text-green-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Instant Booking</h3>
+                        <p class="text-gray-600">Schedule appointments effortlessly with our real-time booking system.
+                            No waiting queues, just instant confirmation.</p>
+                    </div>
+
+                    <!-- Service 3 -->
+                    <div class="bg-white p-8 rounded-xl shadow-md card-hover text-center border border-gray-100">
+                        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-file-medical text-2xl text-purple-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Digital Records</h3>
+                        <p class="text-gray-600">Securely store and access your medical history, prescriptions, and
+                            reports anytime, anywhere.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- About Section -->
+            <section id="about" class="py-16 bg-blue-50 -mx-4 px-4 scroll-mt-24">
+                <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-12">
+                    <div class="md:w-1/2">
+                        <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                            alt="Medical Team" class="rounded-xl shadow-lg w-full object-cover h-80">
+                    </div>
+                    <div class="md:w-1/2">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">About <span class="text-blue-600">Team
+                                MediCare</span></h2>
+                        <p class="text-gray-700 mb-4 leading-relaxed">
+                            Team MediCare is dedicated to revolutionizing the healthcare experience through technology.
+                            We believe in making quality healthcare accessible, efficient, and transparent for everyone.
+                        </p>
+                        <p class="text-gray-700 mb-6 leading-relaxed">
+                            Our platform bridges the gap between patients and doctors, ensuring seamless communication
+                            and better health outcomes. Led by Vedant & Yash, our team is committed to innovation and
+                            excellence in digital health solutions.
+                        </p>
+                        <a href="#contact"
+                            class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-full transition inline-flex items-center">
+                            Get in Touch <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact Section -->
+            <section id="contact" class="py-16 scroll-mt-24">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-800">Contact <span class="text-blue-600">Us</span></h2>
+                    <div class="w-16 h-1 bg-blue-600 mx-auto mt-4 rounded"></div>
+                    <p class="text-gray-600 mt-4">Have questions? We're here to help.</p>
+                </div>
+
+                <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-white p-8 rounded-xl shadow-md border border-gray-100">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">Get in Touch</h3>
+                        <form action="#"
+                            onsubmit="event.preventDefault(); alert('Thank you for your message! We will get back to you soon.');"
+                            class="space-y-4">
+                            <div>
+                                <label class="block text-gray-700 mb-2">Name</label>
+                                <input type="text"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field"
+                                    placeholder="Your Name" required>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 mb-2">Email</label>
+                                <input type="email"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field"
+                                    placeholder="your@email.com" required>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 mb-2">Message</label>
+                                <textarea rows="4"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg input-field"
+                                    placeholder="How can we help?" required></textarea>
+                            </div>
+                            <button type="submit"
+                                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition">
+                                Send Message
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="flex flex-col justify-center space-y-6 md:pl-8">
+                        <div class="flex items-start">
+                            <div
+                                class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                <i class="fas fa-map-marker-alt text-blue-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-semibold text-gray-800">Location</h4>
+                                <p class="text-gray-600">Tech Park, Innovation Hub<br>Mumbai, India</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div
+                                class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                <i class="fas fa-envelope text-green-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-semibold text-gray-800">Email</h4>
+                                <p class="text-gray-600">medicare24778@gmail.com</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div
+                                class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                <i class="fas fa-phone-alt text-purple-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-semibold text-gray-800">Phone</h4>
+                                <p class="text-gray-600">+91 98765 43210</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 bg-blue-50 p-6 rounded-xl border border-blue-100">
+                            <h4 class="text-lg font-semibold text-blue-800 mb-2">Working Hours</h4>
+                            <p class="text-gray-600 text-sm">Mon - Fri: 9:00 AM - 6:00 PM</p>
+                            <p class="text-gray-600 text-sm">Sat - Sun: 10:00 AM - 4:00 PM</p>
+                        </div>
                     </div>
                 </div>
             </section>
