@@ -34,27 +34,29 @@ if database_url:
         database_url = database_url.replace("postgres://", "postgresql://", 1)
 
     # 2. Clean query parameters (remove 'supa' or 'options' etc that break psycopg2)
-    try:
-        from urllib.parse import urlparse, urlunparse, parse_qs, urlencode
-        parsed = urlparse(database_url)
-        # Keep only sslmode, discard others that might break the driver
-        query_params = parse_qs(parsed.query)
-        clean_params = {}
-        if 'sslmode' in query_params:
-            clean_params['sslmode'] = query_params['sslmode']
-        
-        # Reconstruct URL with clean params
-        new_query = urlencode(clean_params, doseq=True)
-        database_url = urlunparse((
-            parsed.scheme,
-            parsed.netloc,
-            parsed.path,
-            parsed.params,
-            new_query,
-            parsed.fragment
-        ))
-    except Exception as e:
-        logging.warning(f"Failed to clean database URL: {e}")
+    # Only necessary for postgresql connection strings
+    if database_url.startswith("postgres"):
+        try:
+            from urllib.parse import urlparse, urlunparse, parse_qs, urlencode
+            parsed = urlparse(database_url)
+            # Keep only sslmode, discard others that might break the driver
+            query_params = parse_qs(parsed.query)
+            clean_params = {}
+            if 'sslmode' in query_params:
+                clean_params['sslmode'] = query_params['sslmode']
+            
+            # Reconstruct URL with clean params
+            new_query = urlencode(clean_params, doseq=True)
+            database_url = urlunparse((
+                parsed.scheme,
+                parsed.netloc,
+                parsed.path,
+                parsed.params,
+                new_query,
+                parsed.fragment
+            ))
+        except Exception as e:
+            logging.warning(f"Failed to clean database URL: {e}")
 
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
