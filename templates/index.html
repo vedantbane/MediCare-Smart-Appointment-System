@@ -781,14 +781,21 @@
         document.addEventListener('DOMContentLoaded', function () {
             const ownershipModal = document.getElementById('ownershipModal');
             if (ownershipModal) {
-                // Show modal on load
-                ownershipModal.classList.remove('hidden');
+                // Check local storage
+                const hasSeenModal = localStorage.getItem('hasSeenOwnershipModal');
+                
+                if (!hasSeenModal) {
+                    // Show modal on load if not seen before
+                    ownershipModal.classList.remove('hidden');
 
-                // Add animation class
-                const modalContent = ownershipModal.querySelector('div.bg-white');
-                if (modalContent) {
-                    modalContent.classList.add('scale-100');
-                    modalContent.classList.remove('scale-95');
+                    // Add animation class
+                    const modalContent = ownershipModal.querySelector('div.bg-white');
+                    if (modalContent) {
+                        setTimeout(() => {
+                            modalContent.classList.add('scale-100');
+                            modalContent.classList.remove('scale-95');
+                        }, 10);
+                    }
                 }
             }
         });
@@ -797,6 +804,8 @@
             const ownershipModal = document.getElementById('ownershipModal');
             if (ownershipModal) {
                 ownershipModal.classList.add('hidden');
+                // Set flag in local storage
+                localStorage.setItem('hasSeenOwnershipModal', 'true');
             }
         }
     </script>
